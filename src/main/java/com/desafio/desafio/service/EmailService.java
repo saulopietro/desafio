@@ -6,7 +6,6 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.mail.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,7 +15,6 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
-
     public void enviarEmail(String destinatario, String assunto, String corpo) {
         try {
             MimeMessage mail = mailSender.createMimeMessage();
