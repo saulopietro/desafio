@@ -46,5 +46,8 @@ public class EmailService {
 
         // Enviar para o vendedor
         enviarEmail(vendedorEmail, assunto, corpo);
+
+
     }
+
 }

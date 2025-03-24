@@ -1,2 +1,2 @@
-INSERT INTO tb_user (name, email, password, cpf, balance) VALUES ('João', 'joao@gmail.com', '123456', '12345678901', 1000.0);
-INSERT INTO tb_user (name, email, password, cnpj, balance) VALUES ( 'Maria', 'maria@gmail.com', '123456', '12345678901111', 1000.0);
+INSERT INTO tb_user (type, name, email, password, cpf, balance) VALUES ('SELLER', 'João', 'joao@gmail.com', '123456', '12345678901', 1000.0);
+INSERT INTO tb_user (type, name, email, password, cnpj, balance) VALUES ('CUSTOMER', 'Maria', 'maria@gmail.com', '123456', '12345678901111', 1000.0);

@@ -1,6 +1,7 @@
 package com.desafio.desafio.service;
 
 import com.desafio.desafio.model.Transaction;
+import com.desafio.desafio.model.TransactionStatusEnum;
 import com.desafio.desafio.model.User;
 import com.desafio.desafio.repository.TransactionRepository;
 import com.desafio.desafio.repository.UserRepository;
@@ -8,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
 
 @Service
 public class TransactionService {
@@ -26,35 +24,35 @@ public class TransactionService {
     private EmailService emailService;
 
     @Transactional
-    public void sendMoney(Long id_receiver, Long id_shipper, Double amount) {
-        Optional<User> receiver = userRepository.findById(id_receiver);
-        User shipper = userRepository.getReferenceById(id_shipper);
+    public void transaction(User seller, User customer, Double amount) {
+        try {
+            Transaction result = copyToTransaction(seller, customer, amount);
+
+            transactionRepository.save(result);
+
+            emailService.enviarNotificacaoTransacao(
+                    seller.getEmail(),
+                    customer.getEmail(),
+                    result.getAmount()
+            );
+        } catch (Exception e) {
+            Transaction result = copyToTransaction(seller, customer, amount);
+            result.setStatus(TransactionStatusEnum.DENIED);
+            transactionRepository.save(result);
+        }
+}
+
+    public Transaction copyToTransaction(User seller, User customer, Double amount) {
         Transaction transaction = new Transaction();
 
-        if (receiver.get().getCnpj() == null) {
-            throw new RuntimeException("O lojista nao pode receber dinheiro");
-        }
+        LocalDate dateNow = LocalDate.now();
 
-        if (shipper.getBalance() <= amount) {
-            throw new RuntimeException("Saldo insuficiente");
-        }
-
-        receiver.get().setBalance(receiver.get().getBalance() + amount);
-        shipper.setBalance(shipper.getBalance() - amount);
-
-        userRepository.save(shipper);
-
-        userRepository.save(receiver.get());
-
+        transaction.setDate(dateNow);
         transaction.setAmount(amount);
-        transaction.setClient(receiver.get());
+        transaction.setSeller(seller);
+        transaction.setCustomer(customer);
+        transaction.setStatus(TransactionStatusEnum.APPROVED);
 
-        transactionRepository.save(transaction);
-
-        emailService.enviarNotificacaoTransacao(
-                shipper.getEmail(),
-                receiver.get().getEmail(),
-                transaction.getAmount()
-                );
-    }
+        return transaction;
+        }
 }

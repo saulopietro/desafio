@@ -2,7 +2,6 @@ package com.desafio.desafio.model;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,12 +27,13 @@ public class User {
     @Column(unique = true)
     private String cnpj;
 
-    private TypeEnum type;
+    @Enumerated(EnumType.STRING)
+    private TransactionTypeEnum type;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "seller")
     private List<Transaction> transaction;
 
-    public User(Long id, TypeEnum type, String cnpj, String cpf, Double balance, String password, String email, String name, String cadastro) {
+    public User(Long id, TransactionTypeEnum type, String cnpj, String cpf, Double balance, String password, String email, String name, String cadastro) {
         this.id = id;
         this.balance = balance;
         this.password = password;
@@ -41,10 +41,10 @@ public class User {
         this.name = name;
         if(cadastro.length() == 11) {
             this.cpf = cadastro;
-            this.type = TypeEnum.CUSTOMER;
+            this.type = TransactionTypeEnum.CUSTOMER;
         } else if (cadastro.length() == 14) {
             this.cnpj = cadastro;
-            this.type = TypeEnum.SELLER;
+            this.type = TransactionTypeEnum.SELLER;
         }
     }
 
@@ -85,11 +85,11 @@ public class User {
         this.cpf = cpf;
     }
 
-    public TypeEnum getType() {
+    public TransactionTypeEnum getType() {
         return type;
     }
 
-    public void setType(TypeEnum type) {
+    public void setType(TransactionTypeEnum type) {
         this.type = type;
     }
 
